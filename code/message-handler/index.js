@@ -1,4 +1,8 @@
-const { isValidDateRegex, convertTextToDate } = require("./utils/formatUtils");
+const {
+  isValidDateRegex,
+  convertTextToDate,
+  isValidDateInput,
+} = require("./utils/formatUtils");
 
 const {
   START_STATE,

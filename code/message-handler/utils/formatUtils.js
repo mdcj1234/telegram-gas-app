@@ -20,4 +20,5 @@ function convertTextToDate(text) {
 module.exports = {
   isValidDateRegex,
   convertTextToDate,
+  isValidDateInput,
 };
