@@ -49,14 +49,14 @@ async function listActiveUsers() {
   return users.Items;
 }
 
-async function listContacts({ user_id }) {
+async function listContactsThatCouldBeWithoutGasNotNotified({ user_id }) {
   const alert_date = new Date();
   alert_date.setDate(alert_date.getDate() + 3);
 
   const params = {
     TableName: CONTACT_DATA_TABLE,
     KeyConditionExpression: `user_id = :user_id`,
-    FilterExpression: `expected_purchase_date <= :alert_date AND (attribute_not_exists(already_notified) OR already_notified = :notified)`,
+    FilterExpression: `expected_purchase_date <= :alert_date AND (attribute_not_exists(notified) OR notified = :notified)`,
     ExpressionAttributeValues: {
       ":user_id": user_id,
       ":alert_date": alert_date.toISOString(),
@@ -89,6 +89,6 @@ async function updateContact({ user_id, phone_number, notified }) {
 module.exports = {
   sendMessage,
   listActiveUsers,
-  listContacts,
+  listContactsThatCouldBeWithoutGasNotNotified,
   updateContact,
 };
