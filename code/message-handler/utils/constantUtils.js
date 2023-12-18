@@ -20,6 +20,7 @@ function CONTACT_DETAILS({
 }
 
 const USER_NOT_ACTIVE_MESSAGE = "Usuário inativo! Entre em contato com o admin";
+const INVALID_REGISTRATION_DATE_MESSAGE = "Data inválida! Tente novamente";
 const CONTACT_SENT_MESSAGE = "Selecione uma das opções";
 const PURCHASE_REGISTRATION_QUANTITY_MESSAGE =
   "Digite a quantidade de gás comprada";
@@ -40,6 +41,7 @@ module.exports = {
   WELCOME_MESSAGE,
   CONTACT_DETAILS,
 
+  INVALID_REGISTRATION_DATE_MESSAGE,
   CONTACT_SENT_MESSAGE,
   PURCHASE_REGISTRATION_QUANTITY_MESSAGE,
   PURCHASE_REGISTRATION_DATE_MESSAGE,

@@ -5,6 +5,12 @@ function isValidDateRegex(text) {
   return regex.test(text);
 }
 
+function isValidDateInput(text) {
+  const date = convertTextToDate(text);
+  const today = new Date();
+  return date <= today;
+}
+
 function convertTextToDate(text) {
   const dateParts = text.split("/");
   const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);

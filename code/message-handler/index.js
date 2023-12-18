@@ -34,6 +34,7 @@ const {
   PURCHASE_REGISTRATION_SUCCESS_MESSAGE,
   PUCHASE_REGISTRATION_CUSTOM_DATE_MESSAGE,
   CONTACT_SENT_MESSAGE,
+  INVALID_REGISTRATION_DATE_MESSAGE,
 } = require("./utils/constantUtils");
 
 module.exports.handler = async (event) => {
@@ -70,7 +71,7 @@ module.exports.handler = async (event) => {
           first_name: from.first_name,
           username: from.username,
           language_code: from.language_code,
-          active: false,
+          active: true,
           current_state: START_STATE,
           state_metadata: {},
         });
@@ -155,8 +156,15 @@ module.exports.handler = async (event) => {
           let purchase_date = new Date();
           if (text === YESTERDAY_PURCHASE_COMMAND)
             purchase_date.setDate(purchase_date.getDate() - 1);
-          else if (isValidDateRegex(text))
+          else if (isValidDateRegex(text) && isValidDateInput(text))
             purchase_date = convertTextToDate(text);
+          else if (!isValidDateInput(text)) {
+            await sendMessage(
+              chat.id.toString(),
+              INVALID_REGISTRATION_DATE_MESSAGE
+            );
+            return { statusCode: 200 };
+          }
 
           await process_purchase_data({
             user_id: from.id.toString(),
