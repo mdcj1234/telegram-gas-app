@@ -159,11 +159,12 @@ module.exports.handler = async (event) => {
 
           let purchase_date;
           if (text === TODAY_PURCHASE_COMMAND) purchase_date = new Date();
-          if (text === YESTERDAY_PURCHASE_COMMAND)
+          else if (text === YESTERDAY_PURCHASE_COMMAND) {
+            purchase_date = new Date();
             purchase_date.setDate(purchase_date.getDate() - 1);
-          else if (isValidDateRegex(text) && isValidDateInput(text))
+          } else if (isValidDateInput(text))
             purchase_date = convertTextToDate(text);
-          else if (!isValidDateInput(text)) {
+          else {
             await sendMessage(
               chat.id.toString(),
               INVALID_REGISTRATION_DATE_MESSAGE
