@@ -157,7 +157,8 @@ module.exports.handler = async (event) => {
             last_purchase_date,
           } = user_metadata;
 
-          let purchase_date = new Date();
+          let purchase_date;
+          if (text === TODAY_PURCHASE_COMMAND) purchase_date = new Date();
           if (text === YESTERDAY_PURCHASE_COMMAND)
             purchase_date.setDate(purchase_date.getDate() - 1);
           else if (isValidDateRegex(text) && isValidDateInput(text))
