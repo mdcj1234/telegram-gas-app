@@ -17,9 +17,10 @@ const {
   getContact,
   registerContact,
   updateContact,
-} = require("./dynamodb/dynamodbUtils");
+} = require("./dynamodb");
 
 const {
+  USER_NOT_ACTIVE_MESSAGE,
   REGISTER_PURCHASE_COMMAND,
   REPORT_COMMAND,
   START_COMMAND,
@@ -51,6 +52,10 @@ module.exports.handler = async (event) => {
   let user_metadata = {};
   let user_current_state = START_STATE;
   if (user) {
+    if (!user.active) {
+      await sendMessage(chat.id.toString(), USER_NOT_ACTIVE_MESSAGE);
+      return { statusCode: 200 };
+    }
     user_metadata = user.state_metadata;
     user_current_state = user.current_state;
   }
@@ -65,6 +70,7 @@ module.exports.handler = async (event) => {
           first_name: from.first_name,
           username: from.username,
           language_code: from.language_code,
+          active: false,
           current_state: START_STATE,
           state_metadata: {},
         });
@@ -87,7 +93,7 @@ module.exports.handler = async (event) => {
         } else if (text === REPORT_COMMAND) {
           console.log(" --- Relatório do cliente command --- ");
           console.log(user_metadata);
-          sendMessage(from.id.toString(), CONTACT_DETAILS(user_metadata));
+          await sendMessage(from.id.toString(), CONTACT_DETAILS(user_metadata));
           updateUserState(from.id.toString(), REPORT_STATE, {});
         }
         break;

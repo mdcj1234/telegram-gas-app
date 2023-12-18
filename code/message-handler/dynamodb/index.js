@@ -9,7 +9,7 @@ const USER_DATA_TABLE = process.env.USER_DATA_TABLE;
 const PURCHASE_DATA_TABLE = process.env.PURCHASE_DATA_TABLE;
 const CONTACT_DATA_TABLE = process.env.CONTACT_DATA_TABLE;
 
-export function sendMessage(chat_id, text, message_metadata = {}) {
+function sendMessage(chat_id, text, message_metadata = {}) {
   const apiUrl = new URL(
     `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
   );
@@ -36,12 +36,15 @@ export function sendMessage(chat_id, text, message_metadata = {}) {
   });
 }
 
-export async function createUser({
+async function createUser({
   user_id,
   is_bot,
   first_name,
   username,
   language_code,
+  active,
+  current_state,
+  state_metadata,
 }) {
   const params = {
     TableName: USER_DATA_TABLE,
@@ -51,13 +54,16 @@ export async function createUser({
       first_name,
       username,
       language_code,
+      active,
+      current_state,
+      state_metadata,
     },
   };
 
   return documentClient.put(params).promise();
 }
 
-export async function getUser(user_id) {
+async function getUser(user_id) {
   const params = {
     TableName: USER_DATA_TABLE,
     KeyConditionExpression: `user_id = :user_id`,
@@ -73,7 +79,7 @@ export async function getUser(user_id) {
   return user.Items[0];
 }
 
-export async function updateUserState(user_id, state, state_metadata) {
+async function updateUserState(user_id, state, state_metadata) {
   const params = {
     TableName: USER_DATA_TABLE,
     Key: {
@@ -90,7 +96,7 @@ export async function updateUserState(user_id, state, state_metadata) {
   return documentClient.update(params).promise();
 }
 
-export async function getContact({ user_id, phone_number }) {
+async function getContact({ user_id, phone_number }) {
   const params = {
     TableName: CONTACT_DATA_TABLE,
     KeyConditionExpression: `user_id = :user_id AND phone_number = :phone_number`,
@@ -107,8 +113,9 @@ export async function getContact({ user_id, phone_number }) {
   return contact.Items[0];
 }
 
-export async function updateContact({
+async function updateContact({
   user_id,
+  chat_id,
   phone_number,
   last_purchase_date,
   total_purchases,
@@ -121,8 +128,13 @@ export async function updateContact({
       user_id,
       phone_number,
     },
-    UpdateExpression: `set last_purchase_date = :last_purchase_date, total_purchases = :total_purchases, total_quantity = :total_quantity, expected_purchase_date = :expected_purchase_date`,
+    UpdateExpression: `set last_purchase_date = :last_purchase_date,
+      total_purchases = :total_purchases,
+      total_quantity = :total_quantity,
+      expected_purchase_date = :expected_purchase_date,
+      chat_id = :chat_id`,
     ExpressionAttributeValues: {
+      ":chat_id": chat_id,
       ":last_purchase_date": last_purchase_date.toISOString(),
       ":total_purchases": total_purchases,
       ":total_quantity": total_quantity,
@@ -136,7 +148,7 @@ export async function updateContact({
   return documentClient.update(params).promise();
 }
 
-export async function registerContact({ user_id, first_name, phone_number }) {
+async function registerContact({ user_id, first_name, phone_number }) {
   const params = {
     TableName: CONTACT_DATA_TABLE,
     Item: {
@@ -154,7 +166,7 @@ export async function registerContact({ user_id, first_name, phone_number }) {
   return result.Attributes;
 }
 
-export async function registerPurchase({
+async function registerPurchase({
   user_id,
   chat_id,
   phone_number,
@@ -177,3 +189,14 @@ export async function registerPurchase({
 
   return documentClient.put(params).promise();
 }
+
+module.exports = {
+  sendMessage,
+  createUser,
+  getUser,
+  updateUserState,
+  getContact,
+  updateContact,
+  registerContact,
+  registerPurchase,
+};
