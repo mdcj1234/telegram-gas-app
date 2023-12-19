@@ -149,6 +149,8 @@ async function updateContact({
 }
 
 async function registerContact({ user_id, first_name, phone_number }) {
+  const total_purchases = 0;
+  const total_quantity = 0;
   const params = {
     TableName: CONTACT_DATA_TABLE,
     Item: {
@@ -156,14 +158,13 @@ async function registerContact({ user_id, first_name, phone_number }) {
       first_name,
       phone_number,
       last_purchase_date: null,
-      total_purchases: 0,
-      total_quantity: 0,
+      total_purchases,
+      total_quantity,
     },
-    ReturnValues: "ALL_OLD",
   };
 
-  const result = await documentClient.put(params).promise();
-  return result.Attributes;
+  await documentClient.put(params).promise();
+  return { user_id, first_name, phone_number, total_purchases, total_quantity };
 }
 
 async function registerPurchase({
